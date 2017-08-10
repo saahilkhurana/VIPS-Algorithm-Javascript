@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="minimizeSpace.js"></script>
+    <script type="text/javascript">
+        function codeAddress() {
+            getElementIdsInsideContainer(document.body);
+            <!--revertBack('header12');-->
+        }
+
+        window.onload = codeAddress;
+     </script>
+    <style>
+        #header {
+            width: 100%;
+            background-color: red;
+        }
+        .container {
+            width: 300px;
+            margin: auto;
+        }
+        #first {
+            width: 100px;
+            float: left;
+            height: 300px;
+            background-color: #aaa;
+        }
+        #second {
+            width: 200px;
+            float: left;
+            height: 300px;
+            background-color: #bbb;
+            color: white;
+        }
+        #clear {
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div style="padding: 20%">
+        First name: <input id="text1" type="text" name="firstname" value="Mickey">
+        Last name: <input id="text2" type="text" name="lastname" value="Mouse">
+
+        <input id="submit1" type="submit" value="Submit">
+        <div id="header11" style="color:red;width:580px">
+            <h1 id="header12" style="padding-top:20px;padding-bottom:20px;width:480px">This is a heading 1</h1>
+            <p id="header13" style="padding-top:20px;padding-bottom:20px;width:480px">This is a paragraph 1.</p>
+            <button id="button1" style="padding-top:20px;padding-bottom:20px;" type="button" onclick="alert('Button');">Button!</button>
+        </div>
+        <div id="header21" style="color:green;">
+            <h2 id="header22" style="width:600px">This is a heading 1 This is a heading 2 This is a heading 3</h2>
+            <p id="header23">This is a paragraph 2.</p>
+        </div>
+        <div id="header31" style="color:blue">
+            <h3 id="header32">This is a heading 3</h3>
+            <p id="header33">This is a paragraph 3.</p>
+        </div>
+        <button id="button2" type="button" onclick="alert('Click Me');">Click Me!</button>
+
+        <div id="header">
+            <div class='container'>This is a container</div>
+        </div>
+        <div class='container'>
+            <div id="first">Container 1 This is a heading 1 This is a heading 2 This is a heading 3</div>
+            <div id="second">Container 2 This is a heading 1 This is a heading 2 This is a heading 3</a>
+            </div>
+            <div id="clear"> Clear 1</div>
+        </div>
+    </div>
+</body>
+</html>
