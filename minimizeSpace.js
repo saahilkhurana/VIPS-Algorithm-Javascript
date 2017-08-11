@@ -1,33 +1,12 @@
 var zoomFactor = 10, shrinkFactor = 10;
 
-var block_id = [".1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.0",
-                ".1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.1.0",
-                ".1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.1.1",
-                ".1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.1.1.0",
-                ".1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.1.1.0.1.1",
-                ".1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.1.1.0.0.0.0.0.1.0",
-                ".1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.1.1.0.0.0.0.0.1.0.1.0.0",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.0",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.0.0.0",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.0.0.0.$FlightSearchForm__radioLabel--0",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.0.0.0.$FlightSearchForm__radioLabel--1",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.0.0.0.$FlightSearchForm__radioLabel--2",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.1.$FlightSearchForm__FlightLocationDateForm",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.1.$FlightSearchForm__FlightLocationDateForm.0",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.4.0",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.4.0.0.1",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.4.0.1.1",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.5.0.0.1",
-                ".uf7c8qgy50.0.0.0.0.0.0.0.1.$2__view.$flight.1.5"];
-
 function revertBack(elementId){
     var element = document.getElementById(elementId);
     element.style.cssText = element.previousCSS;
 }
 
 //variable reductionFactor lies between 0 and 1
-//orientation=0 -> vertical, orientation=1 -> horizontal
-function removeSpace(element, mWidth, mHeight, reductionFactor, orientation){
+function removeSpace(element, mWidth, mHeight, reductionFactor){
 //    var previousCSS = '';
 //    for(var i = 0; i < css.length; i++){
 //        previousCSS += css[i] + ':' + css.getPropertyValue(css[i]) + ';';
@@ -55,11 +34,8 @@ function removeSpace(element, mWidth, mHeight, reductionFactor, orientation){
         height *= 0.8;
     }
 
-    if(orientation == 1){
-        element.style.height = height + 'px';
-    }else{
-        element.style.width = width + 'px';
-    }
+//    element.style.height = height + 'px';
+    element.style.width = width + 'px';
 
     if(mWidth && mWidth > 0 && mWidth < width){
         width = mWidth;
@@ -87,37 +63,24 @@ function removeSpace(element, mWidth, mHeight, reductionFactor, orientation){
     return [paddingHorizontal+marginHorizontal+width, paddingVertical+marginVertical+height];
 }
 
-function getElementIdsInsideContainer(container, orientation) {
-    var elmWidths = [0], elmHeights = [0], w, h, mWidth, mHeight;
+function getElementIdsInsideContainer(container) {
+    var elmWidths = {}, elmHeights = {}, w, h, mWidth, mHeight, elm;
 //    var elms = container.getElementsByTagName("*");
 
     for (var i = 0; i < container.childElementCount; i++) {
-        var elm = container.children[i];
-        if (elm.id && block_id.includes(elm.id)){
-            // horizontal
-            [w, h] = getElementIdsInsideContainer(elm, 1);
-        }else{
-            // vertical
-            [w, h] = getElementIdsInsideContainer(elm, 0);
-        }
-
-        elmWidths.push(w);
-        elmHeights.push(h);
+        elm = container.children[i];
+        [w, h] = getElementIdsInsideContainer(elm);
+        elmWidths[elm.id] = w;
+        elmHeights[elm.id] = h;
     }
-    if (orientation == 1){
-        mWidth = eval(elmWidths.join("+"));
-        mHeight = Math.max.apply(null,elmHeights);
-    }else{
-        mWidth = Math.max.apply(null, elmWidths);
-        mHeight = eval(elmHeights.join("+"));
-    }
+    [mWidth, mHeight] = run(container, elmWidths, elmHeights);
 
     if(container.tagName == "SELECT"){
         mWidth = 0;
         mHeight = 0;
     }
     console.log([elmWidths,elmHeights]);
-    return removeSpace(container, mWidth, mHeight, 0.3, orientation);
+    return removeSpace(container, mWidth, mHeight, 0.3);
 }
 
 function getFontSize(size){
