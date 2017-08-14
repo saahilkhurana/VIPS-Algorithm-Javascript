@@ -50,7 +50,7 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
 
     if(css.getPropertyValue('font-size')){
         element.style.fontSize = getFontSize(parseInt(css.getPropertyValue('font-size'))) + 'px';
-//        width = getWidthOfText(element.innerText, "17px "+css.getPropertyValue('font-family'), css.getPropertyValue('font-size'));
+//        width = getWidthOfText(element.innerText, element.style.fontSize + " " +css.getPropertyValue('font-family'), css.getPropertyValue('font-size'));
 //        css = getComputedStyle(element);
 //        width = parseInt(css.getPropertyValue('width'));
 //        height = parseInt(css.getPropertyValue('height'));
@@ -148,7 +148,7 @@ function updateMargin(element, css, reductionFactor){
 
 function isVisible(elem) {
     if (!(elem instanceof Element)) throw Error('DomUtil: elem is not an element.');
-    const style = getComputedStyle(elem);
+    var style = getComputedStyle(elem);
     if (style.display === 'none') return false;
     if (style.visibility !== 'visible') return false;
     if (style.opacity < 0.1) return false;
@@ -156,7 +156,7 @@ function isVisible(elem) {
         elem.getBoundingClientRect().width === 0) {
         return false;
     }
-    const elemCenter   = {
+    var elemCenter   = {
         x: elem.getBoundingClientRect().left + elem.offsetWidth / 2,
         y: elem.getBoundingClientRect().top + elem.offsetHeight / 2
     };
@@ -164,11 +164,12 @@ function isVisible(elem) {
     if (elemCenter.x > (document.documentElement.clientWidth || window.innerWidth)) return false;
     if (elemCenter.y < 0) return false;
     if (elemCenter.y > (document.documentElement.clientHeight || window.innerHeight)) return false;
-    let pointContainer = document.elementFromPoint(elemCenter.x, elemCenter.y);
-    do {
-        if (pointContainer === elem) return true;
-    } while (pointContainer = pointContainer.parentNode);
-    return false;
+//    var pointContainer = document.elementFromPoint(elemCenter.x, elemCenter.y);
+//    do {
+//        if (pointContainer === elem) return true;
+//    } while (pointContainer = pointContainer.parentNode);
+//    return false;
+    return true;
 }
 
 function getWidthOfText(txt, fontname, fontsize){
