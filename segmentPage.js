@@ -22,14 +22,16 @@ function verticalSegmentation(visual_blocks){
     var n_visual_blocks = visual_blocks.length, vertical_lines = [], i, size;
     for(i=0; i<n_visual_blocks; i++){
         size = vertical_lines.length;
-        if(size != 0 && vertical_lines[size-1][0] <= visual_blocks[i][1] && visual_blocks[i][1] <= vertical_lines[size-1][1]){
+        if(size != 0 && vertical_lines[size-1][0] < visual_blocks[i][1] && visual_blocks[i][1] < vertical_lines[size-1][1]){
             vertical_lines[size-1][1] = Math.max(visual_blocks[i][3], vertical_lines[size-1][1]);
         }
         else{
             vertical_lines.push([visual_blocks[i][1],visual_blocks[i][3]]);
         }
     }
-    return [].concat.apply([], vertical_lines);
+    vertical_lines = [].concat.apply([], vertical_lines);
+    vertical_lines = vertical_lines.filter(function(item, pos) { return vertical_lines.indexOf(item) == pos;});
+    return vertical_lines;
 }
 
 
@@ -38,14 +40,16 @@ function horizontalSegmentation(visual_blocks){
     var n_visual_blocks = visual_blocks.length, horizontal_lines = [], i, size;
     for(i=0; i<n_visual_blocks; i++){
         size = horizontal_lines.length;
-        if(size != 0 && horizontal_lines[size-1][0] <= visual_blocks[i][0] && visual_blocks[i][0] <= horizontal_lines[size-1][1]){
+        if(size != 0 && horizontal_lines[size-1][0] < visual_blocks[i][0] && visual_blocks[i][0] < horizontal_lines[size-1][1]){
             horizontal_lines[size-1][1] = Math.max(visual_blocks[i][2], horizontal_lines[size-1][1]);
         }
         else{
             horizontal_lines.push([visual_blocks[i][0],visual_blocks[i][2]]);
         }
     }
-    return [].concat.apply([], horizontal_lines)
+    horizontal_lines = [].concat.apply([], horizontal_lines);
+    horizontal_lines = horizontal_lines.filter(function(item, pos) { return horizontal_lines.indexOf(item) == pos;});
+    return horizontal_lines;
 }
 
 function runSegmentation(visual_blocks){
@@ -98,7 +102,11 @@ function getBlocks(visual_blocks, vertical, horizontal){
 }
 
 function closestFloorNum(num, arr){
-    for(var i = 1; i < arr.length; i++) {
+    var len = arr.length;
+    if(num <= arr[0]){
+        return arr[0];
+    }
+    for(var i = 1; i < len; i++) {
         if(arr[i] > num && arr[i-1] <= num){
             return arr[i-1];
         }
@@ -106,8 +114,12 @@ function closestFloorNum(num, arr){
 }
 
 function closestCeilNum(num, arr){
-    for(var i = 0; i < arr.length-1; i++) {
-        if(arr[i+1] >= num && arr[i] < num){
+    var len = arr.length;
+    if(num >= arr[len - 1]){
+        return arr[len-1];
+    }
+    for(var i = 0; i < len-1; i++) {
+        if(arr[i+1] >= num && arr[i] <= num){
             return arr[i+1];
         }
     }
@@ -117,12 +129,14 @@ function getChildrenDimensions(container){
     var elm, position, visual_block, visual_blocks = [];
     for (var i = 0; i < container.childElementCount; i++) {
         elm = container.children[i];
-        position = elm.getBoundingClientRect();
+        if(isVisible(elm)){
+            position = elm.getBoundingClientRect();
 
-        visual_block = [Math.floor(position.top + window.pageYOffset), Math.floor(position.left + window.pageXOffset),
-                Math.floor(position.bottom + window.pageYOffset), Math.floor(position.right + window.pageXOffset),
-                elm.id];
-        visual_blocks.push(visual_block);
+            visual_block = [Math.floor(position.top + window.pageYOffset), Math.floor(position.left + window.pageXOffset),
+                    Math.floor(position.bottom + window.pageYOffset), Math.floor(position.right + window.pageXOffset),
+                    elm.id];
+            visual_blocks.push(visual_block);
+        }
     }
     return visual_blocks;
 }

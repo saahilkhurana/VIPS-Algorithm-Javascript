@@ -13,9 +13,6 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
 //    }
 //    If below declaration of previousCSS fails, go for the above
 //    if(!$(element).is(":visible") || $(element).css('display') == 'none' || $(element).css("visibility") == "hidden"){
-    if(!isVisible(element)){
-        return [0,0];
-    }
     console.log(element);
     var css = getComputedStyle(element),
         width = parseInt(css.getPropertyValue('width')),
@@ -64,20 +61,29 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
 }
 
 function getElementIdsInsideContainer(container) {
-    var elmWidths = {}, elmHeights = {}, w, h, mWidth, mHeight, elm;
+    var elmWidths = {}, elmHeights = {},
+        w, h, mWidth, mHeight, elm, css, count = 0;
 //    var elms = container.getElementsByTagName("*");
 
     for (var i = 0; i < container.childElementCount; i++) {
         elm = container.children[i];
-        [w, h] = getElementIdsInsideContainer(elm);
-        elmWidths[elm.id] = w;
-        elmHeights[elm.id] = h;
+        if(isVisible(elm)){
+            [w, h] = getElementIdsInsideContainer(elm);
+            elmWidths[elm.id] = w;
+            elmHeights[elm.id] = h;
+            count++;
+        }
     }
-    [mWidth, mHeight] = run(container, elmWidths, elmHeights);
 
-    if(container.tagName == "SELECT"){
+    if(!isVisible(container) || count == 0 || container.tagName == "SELECT"){
         mWidth = 0;
         mHeight = 0;
+    }else if(count == 1){
+        css = getComputedStyle(container.children[0]);
+        mWidth = parseInt(css.getPropertyValue('width'));
+        mHeight = parseInt(css.getPropertyValue('height'));
+    }else{
+        [mWidth, mHeight] = run(container, elmWidths, elmHeights);
     }
     console.log([elmWidths,elmHeights]);
     return removeSpace(container, mWidth, mHeight, 0.3);
