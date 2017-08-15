@@ -15,8 +15,8 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
 //    if(!$(element).is(":visible") || $(element).css('display') == 'none' || $(element).css("visibility") == "hidden"){
     console.log(element);
     var css = getComputedStyle(element),
-        width = parseInt(css.getPropertyValue('width')),
-        height = parseInt(css.getPropertyValue('height'));
+        width = parseInt(css.getPropertyValue('width'))+1,
+        height = parseInt(css.getPropertyValue('height'))+1;
 
     element.previousCSS = css.cssText;
     if(css.getPropertyValue('width') == "auto"){
@@ -48,14 +48,15 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
     [paddingVertical, paddingHorizontal] = updatePadding(element, css, reductionFactor);
     [marginVertical, marginHorizontal] = updateMargin(element, css, reductionFactor);
 
-    if(css.getPropertyValue('font-size')){
+    if(element.childElementCount == 0 && element.innerText && css.getPropertyValue('font-size')){
         element.style.fontSize = getFontSize(parseInt(css.getPropertyValue('font-size'))) + 'px';
-//        width = getWidthOfText(element.innerText, element.style.fontSize + " " +css.getPropertyValue('font-family'), css.getPropertyValue('font-size'));
-//        css = getComputedStyle(element);
-//        width = parseInt(css.getPropertyValue('width'));
-//        height = parseInt(css.getPropertyValue('height'));
-//        element.style.height = height + 'px';
-//        element.style.width = width + 'px';
+        css = getComputedStyle(element);
+        [width, height] = getTextWidth(element.innerText, css.getPropertyValue('font'));
+        element.style.width = width + 'px';
+        element.style.height = height + 'px';
+        css = getComputedStyle(element);
+        width = parseInt(css.getPropertyValue('width'))+1;
+        height = parseInt(css.getPropertyValue('height'))+1;
     }
     return [paddingHorizontal+marginHorizontal+width, paddingVertical+marginVertical+height];
 }
@@ -80,8 +81,8 @@ function getElementIdsInsideContainer(container) {
         mHeight = 0;
     }else if(count == 1){
         css = getComputedStyle(container.children[0]);
-        mWidth = parseInt(css.getPropertyValue('width'));
-        mHeight = parseInt(css.getPropertyValue('height'));
+        mWidth = parseInt(css.getPropertyValue('width'))+1;
+        mHeight = parseInt(css.getPropertyValue('height'))+1;
     }else{
         [mWidth, mHeight] = run(container, elmWidths, elmHeights);
     }
@@ -170,6 +171,16 @@ function isVisible(elem) {
 //    } while (pointContainer = pointContainer.parentNode);
 //    return false;
     return true;
+}
+
+
+function getTextWidth(text, font) {
+    // re-use canvas object for better performance
+    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+    var context = canvas.getContext("2d");
+    context.font = font;
+    var metrics = context.measureText(text);
+    return [metrics.width, metrics.height];
 }
 
 function getWidthOfText(txt, fontname, fontsize){
