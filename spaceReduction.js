@@ -120,7 +120,7 @@ function getChildrenDimensions(container){
                             elm];
             visual_blocks.push(visual_block);
         }else{
-            console.log("Not Visible: ", elm);
+            console.log('Not Visible: ', elm);
         }
     }
     return visual_blocks;
@@ -198,21 +198,21 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
 //        previousCSS += css[i] + ':' + css.getPropertyValue(css[i]) + ';';
 //    }
 //    If below declaration of previousCSS fails, go for the above
-//    if(!$(element).is(":visible") || $(element).css('display') == 'none' || $(element).css("visibility") == "hidden"){
+//    if(!$(element).is(':visible') || $(element).css('display') == 'none' || $(element).css('visibility') == 'hidden'){
     console.log(element);
     var css = getComputedStyle(element),
         width = parseInt(css.getPropertyValue('width'))+1,
         height = parseInt(css.getPropertyValue('height'))+1;
 
     element.previousCSS = css.cssText;
-    if(css.getPropertyValue('width') == "auto"){
+    if(css.getPropertyValue('width') == 'auto'){
         width = element.getBoundingClientRect().width;
     }
 
-    if(css.getPropertyValue('height') == "auto"){
+    if(css.getPropertyValue('height') == 'auto'){
         height = element.getBoundingClientRect().height;
     }
-    if(element.tagName == "INPUT" || element.tagName == "SELECT"){
+    if(element.tagName == 'INPUT' || element.tagName == 'SELECT'){
         width *= 0.8;
         height *= 0.8;
     }
@@ -250,7 +250,7 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
 function getElementsInsideContainer(container) {
     var elmWidths = {}, elmHeights = {},
         w, h, mWidth, mHeight, elm, css, count = 0;
-//    var elms = container.getElementsByTagName("*");
+//    var elms = container.getElementsByTagName('*');
 
     for (var i = 0; i < container.childElementCount; i++) {
         elm = container.children[i];
@@ -262,7 +262,7 @@ function getElementsInsideContainer(container) {
         }
     }
 
-    if(!isVisible(container) || count == 0 || container.tagName == "SELECT"){
+    if(!isVisible(container) || count == 0 || container.tagName == 'SELECT'){
         mWidth = 0;
         mHeight = 0;
     }else if(count == 1){
@@ -362,8 +362,8 @@ function isVisible(elem) {
 
 function getTextWidth(text, font) {
     // re-use canvas object for better performance
-    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
-    var context = canvas.getContext("2d");
+    var canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
+    var context = canvas.getContext('2d');
     context.font = font;
     var metrics = context.measureText(text);
     return [metrics.width, metrics.height];
@@ -389,14 +389,14 @@ function getWidthOfText(txt, fontname, fontsize){
 }
 
 function fnCalculate(){
-    var TextDiv = document.getElementById(".1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.1.0.0.0.0");
-    TextDiv.innerHTML = "Where are you going?";
-    TextDiv.style.fontSize = "16.8px";
+    var TextDiv = document.getElementById('.1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.1.0.0.0.0');
+    TextDiv.innerHTML = 'Where are you going?';
+    TextDiv.style.fontSize = '16.8px';
    	var txtHeight = (TextDiv.clientHeight + 1) ;
 	var txtWidth = (TextDiv.clientWidth + 1) ;
-  	var ResultDiv = document.getElementById("divResult");
-//  	ResultDiv.innerHTML = "<br><br><br><b> Text Height  : " + txtHeight + "px </b>"
-//  	ResultDiv.innerHTML  = ResultDiv.innerHTML  + "<br><b> Text Width : " + txtWidth + "px </b>"
+  	var ResultDiv = document.getElementById('divResult');
+//  	ResultDiv.innerHTML = '<br><br><br><b> Text Height  : ' + txtHeight + 'px </b>'
+//  	ResultDiv.innerHTML  = ResultDiv.innerHTML  + '<br><b> Text Width : ' + txtWidth + 'px </b>'
 }
 
 function textLength(element){
