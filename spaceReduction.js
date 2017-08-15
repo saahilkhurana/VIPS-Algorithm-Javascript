@@ -262,9 +262,9 @@ function getElementsInsideContainerWrapper(query){
      var container = document.querySelector(query);
      if(container){
         getElementsInsideContainer(container);
-        return true;
+        return 'Space reduction algorithm run successful';
      }
-     return false;
+     return 'Space reduction algorithm run failed';
 }
 
 function getElementsInsideContainer(container) {
