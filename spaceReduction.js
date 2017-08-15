@@ -1,5 +1,3 @@
-var zoomFactor = 10, shrinkFactor = 10;
-
 function compareFirstColumn(a, b) {
     if (a[0] === b[0]) {
         return 0;
@@ -54,19 +52,32 @@ function horizontalSegmentation(visual_blocks){
 }
 
 function runSegmentation(visual_blocks){
-    var vertical_lines = verticalSegmentation(visual_blocks),
+    var blocks, div_blocks,
+        vertical_lines = verticalSegmentation(visual_blocks),
         horizontal_lines = horizontalSegmentation(visual_blocks);
-    var [blocks, div_blocks] = getBlocks(visual_blocks, vertical_lines, horizontal_lines);
+    [blocks, div_blocks] = getBlocks(visual_blocks, vertical_lines, horizontal_lines);
     return [blocks, div_blocks];
 }
 
 function run(container, elmWidths, elmHeights){
 //    visual_blocks = [[2, 3, 4, 5], [6, 9, 9, 11], [3, 7, 5, 9], [6, 4, 8, 6], [3, 3, 5, 5]];
-    var visual_blocks = getChildrenDimensions(container);
-    var [blocks, div_blocks] = runSegmentation(visual_blocks);
-    var alignment = getAlignment(blocks, div_blocks);
-    var [mWidth, mHeight] = getParentWidthHeight(alignment, elmWidths, elmHeights);
+    var blocks, div_blocks, alignment, mWidth, mHeight,
+        visual_blocks = getChildrenDimensions(container);
+    [blocks, div_blocks] = runSegmentation(visual_blocks);
+    alignment = getAlignment(blocks, div_blocks);
+    [mWidth, mHeight] = getParentWidthHeight(alignment, elmWidths, elmHeights);
     return [mWidth, mHeight];
+}
+
+function getBlockIndex(blocks, v1, h1, v2, h2){
+    var block;
+    for(int i=0; i<blocks.length; i++){
+        block = blocks[i];
+        if(block[0]==v1 && block[1]==h1 && block[2]==v2 && block[3]==h2){
+            return i;
+        }
+    }
+    return -1;
 }
 
 function getBlocks(visual_blocks, vertical, horizontal){
@@ -76,12 +87,12 @@ function getBlocks(visual_blocks, vertical, horizontal){
         h1 = closestFloorNum(visual_blocks[i][1], vertical);
         v2 = closestCeilNum(visual_blocks[i][2], horizontal);
         h2 = closestCeilNum(visual_blocks[i][3], vertical);
-        index = blocks.findIndex(x => x[0]==v1 && x[1]==h1 && x[2]==v2 && x[3]==h2);
+        index = getBlockIndex(blocks, v1, h1, v2, h2);
         if(index != -1){
             div_blocks[index].push(visual_blocks[i]);
         }else{
             blocks.push([v1,h1,v2,h2]);
-            div_blocks[blocks.findIndex(x => x[0]==v1 && x[1]==h1 && x[2]==v2 && x[3]==h2)] = [visual_blocks[i]];
+            div_blocks[getBlockIndex(blocks, v1, h1, v2, h2)] = [visual_blocks[i]];
         }
     }
     return [blocks, div_blocks];
@@ -164,7 +175,7 @@ function getAlignment(blocks, div_blocks){
 }
 
 function getParentWidthHeight(alignment, elmWidths, elmHeights){
-    var pWidth = 0, pHeight = 0;
+    var pw, ph, pWidth = 0, pHeight = 0;
     for(var i=0; i<alignment.length; i++){
         if(alignment[i][0] && alignment[i][0] instanceof Array){
             [pw, ph] = getParentWidthHeight(alignment[i][0], elmWidths, elmHeights);
@@ -245,6 +256,15 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
         height = parseInt(css.getPropertyValue('height'))+1;
     }
     return [paddingHorizontal+marginHorizontal+width, paddingVertical+marginVertical+height];
+}
+
+function getElementsInsideContainerWrapper(query){
+     var container = document.querySelector(query);
+     if(container){
+        getElementsInsideContainer(container);
+        return true;
+     }
+     return false;
 }
 
 function getElementsInsideContainer(container) {
@@ -367,64 +387,4 @@ function getTextWidth(text, font) {
     context.font = font;
     var metrics = context.measureText(text);
     return [metrics.width, metrics.height];
-}
-
-function getWidthOfText(txt, fontname, fontsize){
-  // Create a dummy canvas (render invisible with css)
-  var c=document.createElement('canvas');
-  document.body.appendChild(c);
-
-  // Get the context of the dummy canvas
-  var ctx=c.getContext('2d');
-  // Set the context.font to the font that you are using
-  ctx.font = fontsize + ' ' + fontname;
-  // Measure the string
-  // !!! <CRUCIAL>  !!!
-  var length = ctx.measureText(txt).width;
-  document.body.removeChild(c);
-  // !!! </CRUCIAL> !!!
-  c = null;
-  // Return width
-  return length;
-}
-
-function fnCalculate(){
-    var TextDiv = document.getElementById('.1deop2fudcq.0.0.0.0.1.0.0.1.$0__view.$hotel.1.0.0.0.0');
-    TextDiv.innerHTML = 'Where are you going?';
-    TextDiv.style.fontSize = '16.8px';
-   	var txtHeight = (TextDiv.clientHeight + 1) ;
-	var txtWidth = (TextDiv.clientWidth + 1) ;
-  	var ResultDiv = document.getElementById('divResult');
-//  	ResultDiv.innerHTML = '<br><br><br><b> Text Height  : ' + txtHeight + 'px </b>'
-//  	ResultDiv.innerHTML  = ResultDiv.innerHTML  + '<br><b> Text Width : ' + txtWidth + 'px </b>'
-}
-
-function textLength(element){
-    // Create dummy span
-    var elm = document.createElement('span'),
-    css = getComputedStyle(element);
-    // Set font-size
-    elm.style.font = css.getPropertyValue('font');
-    elm.style.fontDisplay = css.getPropertyValue('font-display');
-    elm.style.fontFamily = css.getPropertyValue('font-family');
-    elm.style.fontFeatureSettings = css.getPropertyValue('font-feature-settings');
-    elm.style.fontKerning = css.getPropertyValue('font-kerning');
-    elm.style.fontSize = css.getPropertyValue('font-size');
-    elm.style.fontStretch = css.getPropertyValue('font-stretch');
-    elm.style.fontStyle = css.getPropertyValue('font-style');
-    elm.style.fontVariant = css.getPropertyValue('font-variant');
-    elm.style.fontVariantCaps = css.getPropertyValue('font-variant-caps');
-    elm.style.fontVariantLigatures = css.getPropertyValue('font-variant-ligatures');
-    elm.style.fontVariantNumeric = css.getPropertyValue('font-variant-numeric');
-    elm.style.fontWeight = css.getPropertyValue('font-weight');
-
-    elm.innerHTML = element.innerText;
-    document.body.appendChild(elm);
-    // Get width NOW, since the dummy span is about to be removed from the document
-    var w = elm.offsetWidth,
-        h = elm.offsetHeight;
-    // Cleanup
-    document.body.removeChild(elm);
-    // All right, we're done
-    return [w+1, h+1];
 }
