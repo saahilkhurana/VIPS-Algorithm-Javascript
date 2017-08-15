@@ -115,7 +115,7 @@ function getChildrenDimensions(container){
                             Math.floor(position.left), // + window.pageXOffset),
                             Math.floor(position.bottom), // + window.pageYOffset),
                             Math.floor(position.right), // + window.pageXOffset),
-                            elm.id];
+                            elm];
             visual_blocks.push(visual_block);
         }else{
             console.log("Not Visible: ", elm);

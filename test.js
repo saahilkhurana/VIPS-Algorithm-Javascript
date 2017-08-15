@@ -59,17 +59,17 @@ function removeSpace(element, mWidth, mHeight, reductionFactor, orientation){
 //    return [positionHorizontal+marginHorizontal+borderHorizontal+paddingHorizontal+width, positionVertical+marginVertical+borderVertical+paddingVertical+height];
 }
 
-function getElementIdsInsideContainer(container, orientation) {
+function getElementsInsideContainer(container, orientation) {
     var elmWidths = [0], elmHeights = [0], elm, mWidth, mHeight, i, w, h;
 //    var elms = container.getElementsByTagName("*");
     for (i = 0; i < container.childElementCount; i++) {
         elm = container.children[i];
         if (elm.id && block_id.includes(elm.id)){
             // horizontal
-            [w, h] = getElementIdsInsideContainer(elm, 1);
+            [w, h] = getElementsInsideContainer(elm, 1);
         }else{
             // vertical
-            [w, h] = getElementIdsInsideContainer(elm, 0);
+            [w, h] = getElementsInsideContainer(elm, 0);
         }
         elmWidths.push(w);
         elmHeights.push(h);

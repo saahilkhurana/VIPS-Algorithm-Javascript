@@ -1,7 +1,6 @@
 var zoomFactor = 10, shrinkFactor = 10;
 
-function revertBack(elementId){
-    var element = document.getElementById(elementId);
+function revertBack(element){
     element.style.cssText = element.previousCSS;
 }
 
@@ -61,7 +60,7 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
     return [paddingHorizontal+marginHorizontal+width, paddingVertical+marginVertical+height];
 }
 
-function getElementIdsInsideContainer(container) {
+function getElementsInsideContainer(container) {
     var elmWidths = {}, elmHeights = {},
         w, h, mWidth, mHeight, elm, css, count = 0;
 //    var elms = container.getElementsByTagName("*");
@@ -69,9 +68,9 @@ function getElementIdsInsideContainer(container) {
     for (var i = 0; i < container.childElementCount; i++) {
         elm = container.children[i];
         if(isVisible(elm)){
-            [w, h] = getElementIdsInsideContainer(elm);
-            elmWidths[elm.id] = w;
-            elmHeights[elm.id] = h;
+            [w, h] = getElementsInsideContainer(elm);
+            elmWidths[count] = w;
+            elmHeights[count] = h;
             count++;
         }
     }
