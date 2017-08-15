@@ -71,7 +71,7 @@ function run(container, elmWidths, elmHeights){
 
 function getBlockIndex(blocks, v1, h1, v2, h2){
     var block;
-    for(int i=0; i<blocks.length; i++){
+    for(var i=0; i<blocks.length; i++){
         block = blocks[i];
         if(block[0]==v1 && block[1]==h1 && block[2]==v2 && block[3]==h2){
             return i;
