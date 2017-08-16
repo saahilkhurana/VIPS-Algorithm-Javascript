@@ -55,7 +55,9 @@ function runSegmentation(visual_blocks){
     var blocks, div_blocks,
         vertical_lines = verticalSegmentation(visual_blocks),
         horizontal_lines = horizontalSegmentation(visual_blocks);
-    [blocks, div_blocks] = getBlocks(visual_blocks, vertical_lines, horizontal_lines);
+    var blockGrid = getBlocks(visual_blocks, vertical_lines, horizontal_lines);
+    blocks = blockGrid[0];
+    div_blocks = blockGrid[1];
     return [blocks, div_blocks];
 }
 
@@ -63,9 +65,13 @@ function run(container, elmWidths, elmHeights){
 //    visual_blocks = [[2, 3, 4, 5], [6, 9, 9, 11], [3, 7, 5, 9], [6, 4, 8, 6], [3, 3, 5, 5]];
     var blocks, div_blocks, alignment, mWidth, mHeight,
         visual_blocks = getChildrenDimensions(container);
-    [blocks, div_blocks] = runSegmentation(visual_blocks);
+    var segmentedBlocks = runSegmentation(visual_blocks);
+    blocks = segmentedBlocks[0];
+    div_blocks = segmentedBlocks[1];
     alignment = getAlignment(blocks, div_blocks);
-    [mWidth, mHeight] = getParentWidthHeight(alignment, elmWidths, elmHeights);
+    var widthHeight = getParentWidthHeight(alignment, elmWidths, elmHeights);
+    mWidth = widthHeight[0];
+    mHeight = widthHeight[1];
     return [mWidth, mHeight];
 }
 
@@ -161,7 +167,9 @@ function getAlignment(blocks, div_blocks){
         for(j=0; j<alignment[i].length; j++){
             k = alignment[i][j];
             if(blocks.length > 1 && div_blocks[k].length > 1){
-                [b, db] = runSegmentation(div_blocks[k])
+                var segmentedBlocks = runSegmentation(div_blocks[k]);
+                b = segmentedBlocks[0];
+                d = segmentedBlocks[1];
                 alignment[i][j] = getAlignment(b, db);
             }else if(blocks.length == 1){
                 alignment[i][j] = div_blocks[0][k][4];
@@ -178,7 +186,9 @@ function getParentWidthHeight(alignment, elmWidths, elmHeights){
     var pw, ph, pWidth = 0, pHeight = 0;
     for(var i=0; i<alignment.length; i++){
         if(alignment[i][0] && alignment[i][0] instanceof Array){
-            [pw, ph] = getParentWidthHeight(alignment[i][0], elmWidths, elmHeights);
+            var pWH = getParentWidthHeight(alignment[i][0], elmWidths, elmHeights);
+            pw = pWH[0];
+            ph = pWH[1];
             pWidth = Math.max(pw, pWidth);
             pHeight += ph;
         }else if(alignment[i] && alignment[i] instanceof Array){
@@ -242,13 +252,18 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
     }
 
     updateMinimumWidthHeight(element);
-    [paddingVertical, paddingHorizontal] = updatePadding(element, css, reductionFactor);
-    [marginVertical, marginHorizontal] = updateMargin(element, css, reductionFactor);
-
+    var padding = updatePadding(element, css, reductionFactor);
+    paddingVertical = padding[0];
+    paddingHorizontal = padding[1];
+    var margin = updateMargin(element, css, reductionFactor);
+    marginVertical = margin[0];
+    marginHorizontal = margin[1];
     if(element.childElementCount == 0 && element.innerText && css.getPropertyValue('font-size')){
         element.style.fontSize = getFontSize(parseInt(css.getPropertyValue('font-size'))) + 'px';
         css = getComputedStyle(element);
-        [width, height] = getTextWidth(element.innerText, css.getPropertyValue('font'));
+        var wh = getTextWidth(element.innerText, css.getPropertyValue('font'));
+        width = wh[0];
+        height = wh[1];
         element.style.width = width + 'px';
         element.style.height = height + 'px';
         css = getComputedStyle(element);
@@ -275,7 +290,9 @@ function getElementsInsideContainer(container) {
     for (var i = 0; i < container.childElementCount; i++) {
         elm = container.children[i];
         if(isVisible(elm)){
-            [w, h] = getElementsInsideContainer(elm);
+            var wh = getElementsInsideContainer(elm);
+            w = wh[0];
+            h = wh[1];
             elmWidths[count] = w;
             elmHeights[count] = h;
             count++;
@@ -290,10 +307,13 @@ function getElementsInsideContainer(container) {
         mWidth = parseInt(css.getPropertyValue('width'))+1;
         mHeight = parseInt(css.getPropertyValue('height'))+1;
     }else{
-        [mWidth, mHeight] = run(container, elmWidths, elmHeights);
+        var widthHeight = run(container, elmWidths, elmHeights);
+        mWidth = widthHeight[0];
+        mHeight = widthHeight[1];
     }
     console.log([elmWidths,elmHeights]);
-    return removeSpace(container, mWidth, mHeight, 0.3);
+    var widthHeight = removeSpace(container, mWidth, mHeight, 0.3);
+    return [widthHeight[0], widthHeight[1]];
 }
 
 function getFontSize(size){
