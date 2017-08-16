@@ -61,15 +61,15 @@ function runSegmentation(visual_blocks){
     return [blocks, div_blocks];
 }
 
-function run(container, elmWidths, elmHeights){
+function getMinimumWidthHeight(container, elmWidths, elmHeights){
 //    visual_blocks = [[2, 3, 4, 5], [6, 9, 9, 11], [3, 7, 5, 9], [6, 4, 8, 6], [3, 3, 5, 5]];
     var blocks, div_blocks, alignment, mWidth, mHeight,
-        visual_blocks = getChildrenDimensions(container);
+        visual_blocks = getVisualBlocks(container);
     var segmentedBlocks = runSegmentation(visual_blocks);
     blocks = segmentedBlocks[0];
     div_blocks = segmentedBlocks[1];
     alignment = getAlignment(blocks, div_blocks);
-    var widthHeight = getParentWidthHeight(alignment, elmWidths, elmHeights);
+    var widthHeight = getElementWidthHeight(alignment, elmWidths, elmHeights);
     mWidth = widthHeight[0];
     mHeight = widthHeight[1];
     return [mWidth, mHeight];
@@ -124,16 +124,16 @@ function closestCeilNum(num, arr){
     return arr[len-1];
 }
 
-function getChildrenDimensions(container){
+function getVisualBlocks(container){
     var elm, position, visual_block, visual_blocks = [];
     for (var i = 0; i < container.childElementCount; i++) {
         elm = container.children[i];
         if(isVisible(elm)){
             position = elm.getBoundingClientRect();
-            visual_block = [Math.floor(position.top), //+ window.pageYOffset),
-                            Math.floor(position.left), // + window.pageXOffset),
-                            Math.floor(position.bottom), // + window.pageYOffset),
-                            Math.floor(position.right), // + window.pageXOffset),
+            visual_block = [Math.floor(position.top + window.pageYOffset),
+                            Math.floor(position.left + window.pageXOffset),
+                            Math.floor(position.bottom + window.pageYOffset),
+                            Math.floor(position.right + window.pageXOffset),
                             elm];
             visual_blocks.push(visual_block);
         }else{
@@ -182,11 +182,11 @@ function getAlignment(blocks, div_blocks){
     return alignment;
 }
 
-function getParentWidthHeight(alignment, elmWidths, elmHeights){
+function getElementWidthHeight(alignment, elmWidths, elmHeights){
     var pw, ph, pWidth = 0, pHeight = 0;
     for(var i=0; i<alignment.length; i++){
         if(alignment[i][0] && alignment[i][0] instanceof Array){
-            var pWH = getParentWidthHeight(alignment[i][0], elmWidths, elmHeights);
+            var pWH = getElementWidthHeight(alignment[i][0], elmWidths, elmHeights);
             pw = pWH[0];
             ph = pWH[1];
             pWidth = Math.max(pw, pWidth);
@@ -213,7 +213,7 @@ function revertBack(element){
 }
 
 //variable reductionFactor lies between 0 and 1
-function removeSpace(element, mWidth, mHeight, reductionFactor){
+function reduceSpace(element, mWidth, mHeight, reductionFactor){
 //    var previousCSS = '';
 //    for(var i = 0; i < css.length; i++){
 //        previousCSS += css[i] + ':' + css.getPropertyValue(css[i]) + ';';
@@ -233,6 +233,7 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
     if(css.getPropertyValue('height') == 'auto'){
         height = element.getBoundingClientRect().height;
     }
+
     if(element.tagName == 'INPUT' || element.tagName == 'SELECT'){
         width *= 0.8;
         height *= 0.8;
@@ -241,48 +242,46 @@ function removeSpace(element, mWidth, mHeight, reductionFactor){
 //    element.style.height = height + 'px';
     element.style.width = width + 'px';
 
-    if(mWidth && mWidth > 0 && mWidth < width){
-        width = mWidth;
-        element.style.width = mWidth + 'px';
-    }
-
-    if(mHeight && mHeight > 0 && mHeight < height){
-        height = mHeight;
-        element.style.height = mHeight + 'px';
-    }
+    width = minimizeWidthHeight(element, mWidth, width, 'width')
+    height = minimizeWidthHeight(element, mHeight, height, 'height');
 
     updateMinimumWidthHeight(element);
+
     var padding = updatePadding(element, css, reductionFactor);
     paddingVertical = padding[0];
     paddingHorizontal = padding[1];
+
     var margin = updateMargin(element, css, reductionFactor);
     marginVertical = margin[0];
     marginHorizontal = margin[1];
+
     if(element.childElementCount == 0 && element.innerText && css.getPropertyValue('font-size')){
         element.style.fontSize = getFontSize(parseInt(css.getPropertyValue('font-size'))) + 'px';
         css = getComputedStyle(element);
         var wh = getTextWidth(element.innerText, css.getPropertyValue('font'));
         width = wh[0];
         height = wh[1];
-        element.style.width = width + 'px';
+        element.style.width = width + 15 + 'px';
         element.style.height = height + 'px';
         css = getComputedStyle(element);
         width = parseInt(css.getPropertyValue('width'))+1;
         height = parseInt(css.getPropertyValue('height'))+1;
     }
+
     return [paddingHorizontal+marginHorizontal+width, paddingVertical+marginVertical+height];
 }
 
-function getElementsInsideContainerWrapper(query){
-     var container = document.querySelector(query);
-     if(container){
-        getElementsInsideContainer(container);
+function spaceReduction(query){
+//     var container = document.querySelector(query);
+    var container = document.getElementById(query);
+    if(container){
+        getWidthHeightContainer(container);
         return 'Space reduction algorithm run successful';
-     }
-     return 'Space reduction algorithm run failed';
+    }
+    return 'Space reduction algorithm run failed';
 }
 
-function getElementsInsideContainer(container) {
+function getWidthHeightContainer(container) {
     var elmWidths = {}, elmHeights = {},
         w, h, mWidth, mHeight, elm, css, count = 0;
 //    var elms = container.getElementsByTagName('*');
@@ -290,7 +289,7 @@ function getElementsInsideContainer(container) {
     for (var i = 0; i < container.childElementCount; i++) {
         elm = container.children[i];
         if(isVisible(elm)){
-            var wh = getElementsInsideContainer(elm);
+            var wh = getWidthHeightContainer(elm);
             w = wh[0];
             h = wh[1];
             elmWidths[count] = w;
@@ -307,12 +306,12 @@ function getElementsInsideContainer(container) {
         mWidth = parseInt(css.getPropertyValue('width'))+1;
         mHeight = parseInt(css.getPropertyValue('height'))+1;
     }else{
-        var widthHeight = run(container, elmWidths, elmHeights);
+        var widthHeight = getMinimumWidthHeight(container, elmWidths, elmHeights);
         mWidth = widthHeight[0];
         mHeight = widthHeight[1];
     }
     console.log([elmWidths,elmHeights]);
-    var widthHeight = removeSpace(container, mWidth, mHeight, 0.3);
+    var widthHeight = reduceSpace(container, mWidth, mHeight, 0.3);
     return [widthHeight[0], widthHeight[1]];
 }
 
@@ -332,6 +331,14 @@ function getSize(size, units){
     }else{
         return size + 'px';
     }
+}
+
+function minimizeWidthHeight(element, minSize, size, quantity){
+    if(minSize && minSize > 0 && minSize < size){
+        size = minSize;
+        element.style[quantity] = minSize + 'px';
+    }
+    return size;
 }
 
 function updateMinimumWidthHeight(element){
