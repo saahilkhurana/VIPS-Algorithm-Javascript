@@ -280,8 +280,8 @@ function reduceSpace(element, mWidth, mHeight, reductionFactor){
 }
 
 function spaceReduction(query){
-//     var container = document.querySelector(query);
-    var container = document.getElementById(query);
+    var container = document.querySelector(query);
+//    var container = document.getElementById(query);
     if(container){
         getWidthHeightContainer(container);
         return 'Space reduction algorithm run successful';
