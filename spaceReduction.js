@@ -235,8 +235,8 @@ function reduceSpace(element, mWidth, mHeight, reductionFactor){
     }
 
     if(element.tagName == 'INPUT' || element.tagName == 'SELECT'){
-        width *= 0.8;
-        height *= 0.8;
+        width *= 0.9;
+        height *= 0.9;
     }
 
 //    element.style.height = height + 'px';
@@ -255,6 +255,14 @@ function reduceSpace(element, mWidth, mHeight, reductionFactor){
     marginVertical = margin[0];
     marginHorizontal = margin[1];
 
+    var position = updatePosition(element, css, reductionFactor);
+    positionVertical = position[0];
+    positionHorizontal = position[1];
+
+    var border = updateBorder(element, css, reductionFactor);
+    borderVertical = border[0];
+    borderHorizontal = border[1];
+
     if(element.childElementCount == 0 && element.innerText && css.getPropertyValue('font-size')){
         element.style.fontSize = getFontSize(parseInt(css.getPropertyValue('font-size'))) + 'px';
         css = getComputedStyle(element);
@@ -262,7 +270,7 @@ function reduceSpace(element, mWidth, mHeight, reductionFactor){
         width = wh[0];
         height = wh[1];
         element.style.width = width + 15 + 'px';
-        element.style.height = height + 'px';
+//        element.style.height = height + 'px';
         css = getComputedStyle(element);
         width = parseInt(css.getPropertyValue('width'))+1;
         height = parseInt(css.getPropertyValue('height'))+1;
@@ -378,6 +386,42 @@ function updateMargin(element, css, reductionFactor){
     element.style.marginRight = getSize(marginRight, mr.indexOf('%') >= 0);
     element.style.marginLeft = getSize(marginLeft, ml.indexOf('%') >= 0);
     return [marginBottom+marginTop, marginRight+marginLeft];
+}
+
+function updatePosition(element, css, reductionFactor){
+    reductionFactor = 0.9;
+    var b = css.getPropertyValue('bottom'),
+        t = css.getPropertyValue('top'),
+        r = css.getPropertyValue('right'),
+        l = css.getPropertyValue('left'),
+        bottom = parseInt(b)*reductionFactor,
+        top = parseInt(t)*reductionFactor,
+        right = parseInt(r)*reductionFactor,
+        left = parseInt(l)*reductionFactor;
+
+    element.style.bottom = getSize(bottom, b.indexOf('%') >= 0);
+    element.style.top = getSize(top, t.indexOf('%') >= 0);
+    element.style.right = getSize(right, r.indexOf('%') >= 0);
+    element.style.left = getSize(left, l.indexOf('%') >= 0);
+    return [bottom+top, right+left];
+}
+
+function updateBorder(element, css, reductionFactor){
+    reductionFactor = 0.9;
+    var bb = css.getPropertyValue('border-bottom-width'),
+        bt = css.getPropertyValue('border-top-width'),
+        br = css.getPropertyValue('border-right-width'),
+        bl = css.getPropertyValue('border-left-width'),
+        borderBottom = parseInt(bb)*reductionFactor,
+        borderTop = parseInt(bt)*reductionFactor,
+        borderRight = parseInt(br)*reductionFactor,
+        borderLeft = parseInt(bl)*reductionFactor;
+
+    element.style.borderBottomWidth = getSize(borderBottom, bb.indexOf('%') >= 0);
+    element.style.borderTopWidth = getSize(borderTop, bt.indexOf('%') >= 0);
+    element.style.borderRightWidth = getSize(borderRight, br.indexOf('%') >= 0);
+    element.style.borderLeftWidth = getSize(borderLeft, bl.indexOf('%') >= 0);
+    return [borderBottom+borderTop, borderRight+borderLeft];
 }
 
 function isVisible(elem) {
