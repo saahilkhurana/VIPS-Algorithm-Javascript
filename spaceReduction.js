@@ -390,7 +390,7 @@ function updateMargin(element, css, reductionFactor){
 
 function updatePosition(element, css, reductionFactor){
     reductionFactor = 0.9;
-    if(element.className == "global-header-nav-product-list"){
+    if(element.className == 'global-header-nav-product-list'){
         reductionFactor = 1.2;
     }
     var b = css.getPropertyValue('bottom'),
