@@ -169,7 +169,7 @@ function getAlignment(blocks, div_blocks){
             if(blocks.length > 1 && div_blocks[k].length > 1){
                 var segmentedBlocks = runSegmentation(div_blocks[k]);
                 b = segmentedBlocks[0];
-                d = segmentedBlocks[1];
+                db = segmentedBlocks[1];
                 alignment[i][j] = getAlignment(b, db);
             }else if(blocks.length == 1){
                 alignment[i][j] = div_blocks[0][k][4];
@@ -262,19 +262,23 @@ function reduceSpace(element, mWidth, mHeight, reductionFactor){
     var border = updateBorder(element, css, reductionFactor);
     borderVertical = border[0];
     borderHorizontal = border[1];
-
-    if(element.childElementCount == 0 && element.innerText && css.getPropertyValue('font-size')){
-        element.style.fontSize = getFontSize(parseInt(css.getPropertyValue('font-size'))) + 'px';
-        css = getComputedStyle(element);
-        var wh = getTextWidth(element.innerText, css.getPropertyValue('font'));
-        width = wh[0];
-		wh = measureText(element.innerText, css.getPropertyValue('font-size'), element.style);
-		width = wh.width;
-        element.style.width = width + 40 + 'px';
-//        element.style.height = height + 'px';
-        css = getComputedStyle(element);
-        width = parseInt(css.getPropertyValue('width'))+1;
-        //height = parseInt(css.getPropertyValue('height'))+1;
+    if(element.innerText && element.innerText.replace(/\s/g,'') != "" && css.getPropertyValue('font-size')){
+        if(element.firstChild && element.firstChild.nodeValue && element.firstChild.nodeValue.replace(/\s/g,'') != "" ){
+            element.style.fontSize = getFontSize(parseInt(css.getPropertyValue('font-size'))) + 'px';
+            css = getComputedStyle(element);
+//            TODO: If get text width function is reliable(which is not reliable now), the space reduction algorithm will be more effective
+//            var wh = getTextWidth(element.firstChild.nodeValue, css.getPropertyValue('font'));
+//            width = wh[0];
+//            height = wh[1];
+            var wh = measureText(element.firstChild.nodeValue, css.getPropertyValue('font-size'), element.style);
+            width = wh.width;
+//            Hardcoded: Adding 40px
+            element.style.width = width + 40 + 'px';
+//            element.style.height = height + 'px';
+            css = getComputedStyle(element);
+            width = parseInt(css.getPropertyValue('width'))+1;
+//            height = parseInt(css.getPropertyValue('height'))+1;
+        }
     }
 
     return [paddingHorizontal+marginHorizontal+width, paddingVertical+marginVertical+height];
@@ -283,7 +287,8 @@ function reduceSpace(element, mWidth, mHeight, reductionFactor){
 function spaceReduction(query){
     var container = document.querySelector(query);
 //    var container = document.getElementById(query);
-    if(container){
+//    Hardcoded: Condition id nav bar
+    if(container && container.id && container.id != "navbar"){
         getWidthHeightContainer(container);
         return 'Space reduction algorithm run successful';
     }
@@ -320,6 +325,13 @@ function getWidthHeightContainer(container) {
         mHeight = widthHeight[1];
     }
     console.log([elmWidths,elmHeights]);
+
+//    Hardcoded: Condition for priceline packages page
+    if(container.className == 'VacationPackagesSearchForm__flight-passengers mobile-seti'){
+        css = getComputedStyle(container);
+        mHeight = css.getPropertyValue('height');
+    }
+
     var widthHeight = reduceSpace(container, mWidth, mHeight, 0.3);
     return [widthHeight[0], widthHeight[1]];
 }
@@ -445,7 +457,8 @@ function isVisible(elem) {
     if (elemCenter.x < 0) return false;
     if (elemCenter.x > (document.documentElement.clientWidth || window.innerWidth)) return false;
     if (elemCenter.y < 0) return false;
-    if (elemCenter.y > (document.documentElement.clientHeight || window.innerHeight)) return false;
+//    TODO: Check below line
+//    if (elemCenter.y > (document.documentElement.clientHeight || window.innerHeight)) return false;
 //    var pointContainer = document.elementFromPoint(elemCenter.x, elemCenter.y);
 //    do {
 //        if (pointContainer === elem) return true;
