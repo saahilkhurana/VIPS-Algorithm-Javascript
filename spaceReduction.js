@@ -262,8 +262,8 @@ function reduceSpace(element, mWidth, mHeight, reductionFactor){
     var border = updateBorder(element, css, reductionFactor);
     borderVertical = border[0];
     borderHorizontal = border[1];
-    if(element.innerText && element.innerText.replace(/\s/g,'') != "" && css.getPropertyValue('font-size')){
-        if(element.firstChild && element.firstChild.nodeValue && element.firstChild.nodeValue.replace(/\s/g,'') != "" ){
+    if(element.innerText && element.innerText.replace(/\s/g,'') != '' && css.getPropertyValue('font-size')){
+        if(element.firstChild && element.firstChild.nodeValue && element.firstChild.nodeValue.replace(/\s/g,'') != '' ){
             element.style.fontSize = getFontSize(parseInt(css.getPropertyValue('font-size'))) + 'px';
             css = getComputedStyle(element);
 //            TODO: If get text width function is reliable(which is not reliable now), the space reduction algorithm will be more effective
@@ -288,7 +288,7 @@ function spaceReduction(query){
     var container = document.querySelector(query);
 //    var container = document.getElementById(query);
 //    Hardcoded: Condition id nav bar
-    if(container && container.id && container.id != "navbar"){
+    if(container && container.id && container.id != 'navbar'){
         getWidthHeightContainer(container);
         return 'Space reduction algorithm run successful';
     }
