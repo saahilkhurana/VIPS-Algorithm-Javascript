@@ -268,12 +268,13 @@ function reduceSpace(element, mWidth, mHeight, reductionFactor){
         css = getComputedStyle(element);
         var wh = getTextWidth(element.innerText, css.getPropertyValue('font'));
         width = wh[0];
-        height = wh[1];
-        element.style.width = width + 15 + 'px';
+		wh = measureText(element.innerText, css.getPropertyValue('font-size'), element.style);
+		width = wh.width;
+        element.style.width = width + 40 + 'px';
 //        element.style.height = height + 'px';
         css = getComputedStyle(element);
         width = parseInt(css.getPropertyValue('width'))+1;
-        height = parseInt(css.getPropertyValue('height'))+1;
+        //height = parseInt(css.getPropertyValue('height'))+1;
     }
 
     return [paddingHorizontal+marginHorizontal+width, paddingVertical+marginVertical+height];
@@ -461,4 +462,31 @@ function getTextWidth(text, font) {
     context.font = font;
     var metrics = context.measureText(text);
     return [metrics.width, metrics.height];
+}
+
+
+function measureText(pText, pFontSize, pStyle) {
+    var lDiv = document.createElement('div');
+
+    document.body.appendChild(lDiv);
+
+    if (pStyle != null) {
+        lDiv.style = pStyle;
+    }
+    lDiv.style.fontSize = '' + pFontSize + 'px';
+    lDiv.style.position = 'absolute';
+    lDiv.style.left = -1000;
+    lDiv.style.top = -1000;
+
+    lDiv.innerHTML = pText;
+
+    var lResult = {
+        width: lDiv.clientWidth,
+        height: lDiv.clientHeight
+    };
+
+    document.body.removeChild(lDiv);
+    lDiv = null;
+
+    return lResult;
 }
