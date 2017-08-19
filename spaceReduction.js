@@ -287,8 +287,11 @@ function reduceSpace(element, mWidth, mHeight, reductionFactor){
 function spaceReduction(query){
     var container = document.querySelector(query);
 //    var container = document.getElementById(query);
-//    Hardcoded: Condition id nav bar
-    if(container && container.id && container.id != 'navbar'){
+    if(container)
+        if(container.id && container.id == 'navbar'){
+            //    Hardcoded: Condition id nav bar
+            return 'Space reduction algorithm run successful';
+        }
         getWidthHeightContainer(container);
         return 'Space reduction algorithm run successful';
     }
