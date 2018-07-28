@@ -1,0 +1,65 @@
+Login to your box
+git clone hw2
+go to /usr/src/hw2-User/
+
+copy .config of hw1-User to hw2-User
+
+goto hw2-User/fs
+
+cp wrapfs sgfs
+
+cd sgfs
+run following 3 vim commands for every file in sgfs directory
+run  - :%s/WRAP/SG/g
+	 - :%s/Wrap/Sg/g
+	 - :%s/wrap/sg/g
+
+rename wrapfs.h to sgfs.h
+
+cd .. - come out to fs
+
+Make an entry for sgfs similar to Wrapfs in follwing 2 files:
+	Makefile
+	KConfig
+
+now go to hw2-User folder. Do make menuconfig and select SGFS as module.
+
+
+cd usr/include/linux/
+vi magic.h
+
+make an entry for SGFS similar to WRAPFS
+
+cd include/uapi/linux
+edit magic.h
+
+make an entry for SGFS similar to WRAPFS same as above
+
+now goto hw2-User
+
+run the 4 elite commands to build kernel
+
+make
+make modules
+make modules_install install
+reboot
+
+boot into 4.6.0 kernel and login again
+
+goto hw2_User/hw2
+mkdir sgfs
+do a cd..
+
+mount -t sgfs hw2/sgfs/ /mnt/sgfs
+
+Tell Us what to do next :)
+
+------------------------------
+make
+unmount /mnt/sgfs
+rmmod sgfs
+insmod ./fs/sgfs/sgfs.ko
+mount -t sgfs hw2/sgfs/ /mnt/sgfs
+
+
+
